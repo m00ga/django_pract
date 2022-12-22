@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
+from os import environ
 
 from pathlib import Path
 
@@ -20,12 +21,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-x4d&ko%s(-pox(k!+=f6*cg8*usansi)0&cbn3i@ip*h#hfa^^'
+SECRET_KEY = environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = int(environ.get("DEBUG", default=0))
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = environ.get("ALLOWED_HOSTS", default="").split(" ")
 
 
 # Application definition
@@ -37,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'apps.core'
 ]
 
 MIDDLEWARE = [
@@ -74,9 +76,13 @@ WSGI_APPLICATION = 'django_pract.wsgi.application'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": environ.get("SQL_ENGINE", "django.db.backends.sqlite3"),
+        "NAME": environ.get("SQL_DATABASE", BASE_DIR / "db.sqlite3"),
+        "USER": environ.get("SQL_USER", "user"),
+        "PASSWORD": environ.get("SQL_PASSWORD", "password"),
+        "HOST": environ.get("SQL_HOST", "localhost"),
+        "PORT": environ.get("SQL_PORT", "5432"),
     }
 }
 
@@ -115,7 +121,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/' if int(environ.get("DEBUG")) == 0 else "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
