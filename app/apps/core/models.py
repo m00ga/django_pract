@@ -14,3 +14,9 @@ class Table(models.Model):
     size_x = models.IntegerField()
     size_y = models.IntegerField()
     is_ordered = models.BooleanField(default=False)
+
+class Board(models.Model):
+    day = models.IntegerField()
+    month = models.IntegerField()
+    year = models.IntegerField()
+    table = models.ForeignKey(Table, on_delete=models.CASCADE)
